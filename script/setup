@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+
+echo "Installing dotfiles..."
+
+CURRENT_DIR=$(pwd)
+
+echo "Making sure ZSH is default shell..."
+if ! grep -q "root.*/bin/zsh" /etc/passwd
+then
+  chsh -s /bin/zsh root
+fi
+
+echo "Installing oh-my-zsh..."
+curl -L http://install.ohmyz.sh | sh
+
+echo "Installing zsh-syntax-highlighting plugins..."
+ZSH_PLUGINS_DIR="$HOME/.oh-my-zsh/custom/plugins"
+mkdir -p "$ZSH_PLUGINS_DIR" && cd "$ZSH_PLUGINS_DIR"
+if [ ! -d "$ZSH_PLUGINS_DIR/zsh-syntax-highlighting" ]; then
+  echo "Installing zsh plugin and zsh-syntax-highlighting..."
+  git clone https://github.com/zsh-users/zsh-autosuggestions
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting
+fi
+cd "$CURRENT_DIR"
+
+echo "Creating symlinks..."
+ln -sf $CURRENT_DIR/zsh/zshrc $HOME/.zshrc
+ln -sf $CURRENT_DIR/git/gitconfig $HOME/.gitconfig
+ln -sf $CURRENT_DIR/git/gitignore_global $HOME/.gitignore_global
+
+echo "Finished installing dotfiles"
